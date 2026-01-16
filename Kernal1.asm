@@ -1,16 +1,20 @@
 BITS 16
 ORG 0x1000
 
-start:
-    cli                     ; safety: stop interrupts
+global kernel_start
+BOOT_INFO_ADDR equ 0x0500
+
+kernel_start:
+    cli
 
     xor ax, ax
-    mov ss, ax              ; stack segment = 0
-    mov sp, 0x9000          ; stack top
+    mov ss, ax
+    mov sp, 0x9000
+    sti
 
-    sti                     ; stack is safe now
+    ; read boot drive passed by bootloader
+    mov al, [BOOT_INFO_ADDR]
 
-    ; ---- Kernel logic ----
     mov ah, 0x0E
     mov si, msg
 
@@ -26,4 +30,4 @@ hang:
 
 msg db "Kernel stack initialized!", 0
 
-times 2048-($-$$) db 0      ; match multi-sector load
+times 2048-($-$$) db 0
